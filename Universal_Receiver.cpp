@@ -123,6 +123,7 @@ bool Universal_Receiver::receivedDataFromController()
     if (temp)
     {
         bool valid_data = true;
+        bool same_data = true;
         for (int ii = 0; ii < NB_MAX_DATA; ii++)
         {
             if (ii < rxdata.analogNb)
@@ -138,6 +139,10 @@ bool Universal_Receiver::receivedDataFromController()
             if (analog[ii] < 0 || analog[ii] > 1023 || lastAnalog[ii] < 0 || lastAnalog[ii] > 1023)
             {
                 valid_data = false;
+            }
+            if (analog[ii] <= lastAnalog[ii] - threshold[ii] || analog[ii] >= lastAnalog[ii] + threshold[ii])
+            {
+                same_data = false;
             }
         }
         for (int ii = 0; ii < NB_MAX_DATA; ii++)
@@ -156,8 +161,16 @@ bool Universal_Receiver::receivedDataFromController()
             {
                 valid_data = false;
             }
+            if (lastDigital[ii] != digital[ii])
+            {
+                same_data = false;
+            }
         }
         if (!valid_data)
+        {
+            return false;
+        }
+        if (same_data)
         {
             return false;
         }
@@ -168,6 +181,7 @@ bool Universal_Receiver::receivedDataFromController()
 
 bool Universal_Receiver::updateWiredInput()
 {
+    bool same_data = true;
     for (int ii = 0; ii < NB_MAX_DATA; ii++)
     {
         if (ii < analogNb_hw)
@@ -179,6 +193,10 @@ bool Universal_Receiver::updateWiredInput()
         {
             lastAnalog[NB_MAX_DATA + ii] = 0;
             analog[NB_MAX_DATA + ii] = 0;
+        }
+        if (analog[NB_MAX_DATA + ii] <= lastAnalog[NB_MAX_DATA + ii] - threshold[NB_MAX_DATA + ii] || analog[NB_MAX_DATA + ii] >= lastAnalog[NB_MAX_DATA + ii] + threshold[NB_MAX_DATA + ii])
+        {
+            same_data = false;
         }
     }
 
@@ -194,43 +212,29 @@ bool Universal_Receiver::updateWiredInput()
             lastDigital[NB_MAX_DATA + ii] = 0;
             digital[NB_MAX_DATA + ii] = 0;
         }
+        if (lastDigital[NB_MAX_DATA + ii] != digital[NB_MAX_DATA + ii])
+        {
+            same_data = false;
+        }
     }
 
+    if (same_data)
+    {
+        return false;
+    }
     return true;
 }
 
 bool Universal_Receiver::receivedData()
 {
-    bool r = receivedDataFromController();
-    bool u = updateWiredInput();
+    isUpdated.btOrHw[0] = receivedDataFromController();
+    isUpdated.btOrHw[1] = updateWiredInput();
 
-    if (r && u)
-    {
-        bool same_data = true;
-        for (int ii = 0; ii < NB_MAX_DATA * 2; ii++)
-        {
-            if (lastDigital[ii] != digital[ii])
-            {
-                same_data = false;
-            }
-            if (analog[ii] <= lastAnalog[ii] - threshold[ii] || analog[ii] >= lastAnalog[ii] + threshold[ii])
-            {
-                same_data = false;
-            }
-        }
-        if (!same_data)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-    else
+    if (!isUpdated.bluetooth() && !isUpdated.hardware())
     {
         return false;
     }
+    return true;
 }
 
 bool Universal_Receiver::buttonPushed(int ii)
