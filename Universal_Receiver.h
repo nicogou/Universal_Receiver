@@ -9,6 +9,21 @@
 #define BT_HW_HM10 "HM-10"
 #define BT_HW_HC05 "HC-05"
 
+struct UPDATED
+{
+    bool btOrHw[2]; // Id 0 is the bluetooth data, id 1 is the HW data.
+
+    bool bluetooth()
+    {
+        return this->btOrHw[0];
+    }
+
+    bool hardware()
+    {
+        return this->btOrHw[1];
+    }
+};
+
 struct RECEIVE_DATA_STRUCTURE
 {
     // put your variable definitions here for the data you want to receive
@@ -61,6 +76,7 @@ public:
     int lastAnalog[NB_MAX_DATA * 2];  // Stores the last analog state.
     int lastDigital[NB_MAX_DATA * 2]; // Stores the last digital state.
     int threshold[NB_MAX_DATA * 2];   // Holds the threshold for the analog values. If old_data-threshold <= incoming data <= old_data+threshold, then the incoming data is considered the same as the old data.
+    UPDATED isUpdated;
 
     // create two EasyTransfer objects.
     SoftEasyTransfer ETin, ETout;

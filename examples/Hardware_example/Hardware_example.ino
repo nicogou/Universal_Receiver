@@ -2,24 +2,31 @@
 
 #define RX 2
 #define TX 3
-int zeros[NB_MAX_DATA];
-bool falses[NB_MAX_DATA];
+
+int digNb_hw = 1;
+int anaNb_hw = 2;
+int digPins[NB_MAX_DATA];
+int anaPins[NB_MAX_DATA];
+bool digInputPullup[NB_MAX_DATA];
+bool digReversedLogic[NB_MAX_DATA];
 int thresholds[NB_MAX_DATA * 2];
 
 Universal_Receiver *rec;
 
 void setup()
 {
+    digPins[0] = 6;
+    anaPins[0] = A0;
+    anaPins[1] = A1;
+    digInputPullup[0] = true;
+    digReversedLogic[0] = false;
     for (int ii = 0; ii < NB_MAX_DATA; ii++)
     {
-        zeros[ii] = 0;
-        falses[ii] = false;
-    }
-    for (int ii = 0; ii < NB_MAX_DATA * 2; ii++)
-    {
         thresholds[ii] = 4;
+        thresholds[ii + NB_MAX_DATA] = 30;
     }
-    rec = new Universal_Receiver(RX, TX, 0, 0, zeros, zeros, falses, falses, thresholds, BT_HW_HC05);
+
+    rec = new Universal_Receiver(RX, TX, digNb_hw, anaNb_hw, digPins, anaPins, digInputPullup, digReversedLogic, thresholds, BT_HW_HC05);
     Serial.println("Start receiver");
 }
 
