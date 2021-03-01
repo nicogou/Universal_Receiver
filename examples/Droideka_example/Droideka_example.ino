@@ -4,7 +4,7 @@
 #define TX 3
 int zeros[NB_MAX_DATA];
 bool falses[NB_MAX_DATA];
-int thresholds[NB_MAX_DATA * 2];
+int16_t thresholds[NB_MAX_DATA * 2];
 
 Universal_Receiver *rec;
 
