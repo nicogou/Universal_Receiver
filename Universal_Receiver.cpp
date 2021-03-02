@@ -18,6 +18,44 @@ Universal_Receiver::Universal_Receiver(HardwareSerial *stream, int digNb_hw, int
     start(digNb_hw, anaNb_hw, digPins, anaPins, digInputPullup, digReversedLogic, thresh, btHardware);
 }
 
+Universal_Receiver::Universal_Receiver(HardwareSerial *stream, int16_t thresh[NB_MAX_DATA * 2], String btHardware)
+{
+    isHwSerial = true;
+    hwControllerSerial = stream;
+
+    int digNb_hw = 0;
+    int anaNb_hw = 0;
+    int zeros[NB_MAX_DATA];
+    bool falses[NB_MAX_DATA];
+    for (int ii = 0; ii < NB_MAX_DATA; ii++)
+    {
+        zeros[ii] = 0;
+        falses[ii] = false;
+    }
+
+    start(digNb_hw, anaNb_hw, zeros, zeros, falses, falses, thresh, btHardware);
+}
+
+Universal_Receiver::Universal_Receiver(int rx, int tx, int16_t thresh[NB_MAX_DATA * 2], String btHardware)
+{
+    isHwSerial = false;
+    receiverSerialRx = rx;
+    receiverSerialTx = tx;
+    controllerSerial = new SoftwareSerial(receiverSerialRx, receiverSerialTx);
+
+    int digNb_hw = 0;
+    int anaNb_hw = 0;
+    int zeros[NB_MAX_DATA];
+    bool falses[NB_MAX_DATA];
+    for (int ii = 0; ii < NB_MAX_DATA; ii++)
+    {
+        zeros[ii] = 0;
+        falses[ii] = false;
+    }
+
+    start(digNb_hw, anaNb_hw, zeros, zeros, falses, falses, thresh, btHardware);
+}
+
 void Universal_Receiver::start(int digNb_hw, int anaNb_hw, int digPins[NB_MAX_DATA], int anaPins[NB_MAX_DATA], bool digInputPullup[NB_MAX_DATA], bool digReversedLogic[NB_MAX_DATA], int16_t thresh[NB_MAX_DATA * 2], String btHardware)
 {
     btHardwareConfig = btHardware;

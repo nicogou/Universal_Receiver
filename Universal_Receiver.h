@@ -87,6 +87,8 @@ public:
     // Not all pins on the Leonardo and Micro support change interrupts, so only the following can be used for RX: 8, 9, 10, 11, 14 (MISO), 15 (SCK), 16 (MOSI).
     // On Arduino or Genuino 101 RX doesn't work on Pin 13
     Universal_Receiver(HardwareSerial *stream, int digNb_hw, int anaNb_hw, int digPins[NB_MAX_DATA], int anaPins[NB_MAX_DATA], bool digInputPullup[NB_MAX_DATA], bool digReversedLogic[NB_MAX_DATA], int16_t thresh[NB_MAX_DATA * 2], String btHardware); // Class constructor for a Hardware Serial port.
+    Universal_Receiver(HardwareSerial *stream, int16_t thresh[NB_MAX_DATA * 2], String btHardware);                                                                                                                                                       // Class constructor for a Hardware Serial port.
+    Universal_Receiver(int rx, int tx, int16_t thresh[NB_MAX_DATA * 2], String btHardware);                                                                                                                                                               // Class constructor for a Hardware Serial port.
 
     void start(int digNb_hw, int anaNb_hw, int digPins[NB_MAX_DATA], int anaPins[NB_MAX_DATA], bool digInputPullup[NB_MAX_DATA], bool digReversedLogic[NB_MAX_DATA], int16_t thresh[NB_MAX_DATA * 2], String btHardware); // Initiates the non-serial port variables.
 
