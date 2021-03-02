@@ -49,6 +49,7 @@ public:
     String btHardwareConfig; // Stores the type of Bluetooth module used on the Receiver. IDEA: make a struct gathering all the hardware configuration (pin numbers, etc).
 
     bool isHwSerial;                    // True if a hardware serial is used. False if a software serial is used.
+    Stream *hwSerial;                   // Ne fonctionne pas sans ça, même si ce n'est pas utilisé... A investiguer.
     int receiverSerialRx;               // If SW serial is used, stores the Rx pin of the µC.
     int receiverSerialTx;               // If SW serial is used, stores the Tx pin of the µC.
     SoftwareSerial *controllerSerial;   // If SW serial is used, stores the port instance.

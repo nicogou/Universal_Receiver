@@ -1,25 +1,16 @@
 #include <Universal_Receiver.h>
 
-#define RX 2
-#define TX 3
-int zeros[NB_MAX_DATA];
-bool falses[NB_MAX_DATA];
 int16_t thresholds[NB_MAX_DATA * 2];
 
 Universal_Receiver *rec;
 
 void setup()
 {
-    for (int ii = 0; ii < NB_MAX_DATA; ii++)
-    {
-        zeros[ii] = 0;
-        falses[ii] = false;
-    }
     for (int ii = 0; ii < NB_MAX_DATA * 2; ii++)
     {
         thresholds[ii] = 4;
     }
-    rec = new Universal_Receiver(&Serial2, 0, 0, zeros, zeros, falses, falses, thresholds, BT_HW_HC05);
+    rec = new Universal_Receiver(&Serial2, thresholds, BT_HW_HC05);
     Serial.println("Start receiver");
 }
 
