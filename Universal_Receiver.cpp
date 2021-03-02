@@ -36,14 +36,12 @@ void Universal_Receiver::start(int digNb_hw, int anaNb_hw, int digPins[NB_MAX_DA
     if (isHwSerial)
     {
         hwControllerSerial->begin(baudRate);
-        // Start the library, pass in the data details and the name of the serial port. Can be Serial, Serial1, Serial2, etc.
         ETin_hw.begin(details(rxdata), hwControllerSerial);
         ETout_hw.begin(details(txdata), hwControllerSerial);
     }
     else
     {
         controllerSerial->begin(baudRate);
-        // Start the library, pass in the data details and the name of the serial port. Can be Serial, Serial1, Serial2, etc.
         ETin.begin(details(rxdata), controllerSerial);
         ETout.begin(details(txdata), controllerSerial);
     }
@@ -237,7 +235,7 @@ bool Universal_Receiver::receivedData()
     return true;
 }
 
-bool Universal_Receiver::buttonPushed(int ii)
+bool Universal_Receiver::digitalState(int ii)
 {
     if (digital[ii] == 0)
     {
@@ -246,7 +244,7 @@ bool Universal_Receiver::buttonPushed(int ii)
     return false;
 }
 
-bool Universal_Receiver::buttonClicked(int ii)
+bool Universal_Receiver::digitalFalling(int ii)
 {
     if (digital[ii] == 0 && lastDigital[ii] == 1)
     {
@@ -255,7 +253,7 @@ bool Universal_Receiver::buttonClicked(int ii)
     return false;
 }
 
-bool Universal_Receiver::buttonReleased(int ii)
+bool Universal_Receiver::digitalRising(int ii)
 {
     if (digital[ii] == 1 && lastDigital[ii] == 0)
     {
