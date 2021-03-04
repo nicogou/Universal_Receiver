@@ -282,16 +282,38 @@ bool Universal_Receiver::receivedData()
 
 bool Universal_Receiver::digitalState(int ii)
 {
-    if (digital[ii] == 0)
+    bool tmp;
+    if (ii < NB_MAX_DATA && ii >= 0)
+    {
+        tmp = isUpdated.bluetooth();
+    }
+    else if (ii >= NB_MAX_DATA && ii < NB_MAX_DATA * 2)
+    {
+        tmp = isUpdated.hardware();
+    }
+    if (tmp && digital[ii] == 0)
     {
         return true;
+    }
+    else if (tmp && digital[ii] == 1)
+    {
+        return false;
     }
     return false;
 }
 
 bool Universal_Receiver::digitalFalling(int ii)
 {
-    if (digital[ii] == 0 && lastDigital[ii] == 1)
+    bool tmp;
+    if (ii < NB_MAX_DATA && ii >= 0)
+    {
+        tmp = isUpdated.bluetooth();
+    }
+    else if (ii >= NB_MAX_DATA && ii < NB_MAX_DATA * 2)
+    {
+        tmp = isUpdated.hardware();
+    }
+    if (tmp && digital[ii] == 0 && lastDigital[ii] == 1)
     {
         return true;
     }
@@ -300,7 +322,16 @@ bool Universal_Receiver::digitalFalling(int ii)
 
 bool Universal_Receiver::digitalRising(int ii)
 {
-    if (digital[ii] == 1 && lastDigital[ii] == 0)
+    bool tmp;
+    if (ii < NB_MAX_DATA && ii >= 0)
+    {
+        tmp = isUpdated.bluetooth();
+    }
+    else if (ii >= NB_MAX_DATA && ii < NB_MAX_DATA * 2)
+    {
+        tmp = isUpdated.hardware();
+    }
+    if (tmp && digital[ii] == 1 && lastDigital[ii] == 0)
     {
         return true;
     }
