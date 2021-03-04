@@ -22,8 +22,7 @@ void setup()
     digReversedLogic[0] = false;
     for (int ii = 0; ii < NB_MAX_DATA; ii++)
     {
-        thresholds[ii] = 4;
-        thresholds[ii + NB_MAX_DATA] = 30;
+        thresholds[ii] = 30;
     }
 
     rec = new Universal_Receiver(RX, TX, digNb_hw, anaNb_hw, digPins, anaPins, digInputPullup, digReversedLogic, thresholds, BT_HW_HC05);

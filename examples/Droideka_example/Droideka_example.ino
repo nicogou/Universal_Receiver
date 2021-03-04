@@ -4,7 +4,7 @@
 #define TX 3
 int zeros[NB_MAX_DATA];
 bool falses[NB_MAX_DATA];
-int16_t thresholds[NB_MAX_DATA * 2];
+int16_t thresholds[NB_MAX_DATA];
 
 Universal_Receiver *rec;
 
@@ -14,9 +14,6 @@ void setup()
     {
         zeros[ii] = 0;
         falses[ii] = false;
-    }
-    for (int ii = 0; ii < NB_MAX_DATA * 2; ii++)
-    {
         thresholds[ii] = 4;
     }
     rec = new Universal_Receiver(RX, TX, 0, 0, zeros, zeros, falses, falses, thresholds, BT_HW_HC05);

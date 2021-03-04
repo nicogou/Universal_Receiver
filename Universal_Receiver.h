@@ -33,6 +33,7 @@ struct RECEIVE_DATA_STRUCTURE
     int16_t digitalNb;
     int16_t analog[NB_MAX_DATA];
     int16_t digital[NB_MAX_DATA];
+    int16_t analogThreshold[NB_MAX_DATA];
 };
 
 struct SEND_DATA_STRUCTURE
@@ -73,7 +74,7 @@ public:
     int16_t digital[NB_MAX_DATA * 2];       // Data received via Bluetooth is stored in the first NB_MAX_DATA indexes, data from wired sensors is stored in the last NB_MAX_DATA indexes.
     int16_t lastAnalog[NB_MAX_DATA * 2];    // Stores the last analog state.
     int16_t lastDigital[NB_MAX_DATA * 2];   // Stores the last digital state.
-    int16_t threshold[NB_MAX_DATA * 2];     // Holds the threshold for the analog values. If old_data-threshold <= incoming data <= old_data+threshold, then the incoming data is considered the same as the old data.
+    int16_t threshold[NB_MAX_DATA];         // Holds the threshold for the analog values. If old_data-threshold <= incoming data <= old_data+threshold, then the incoming data is considered the same as the old data.
     UPDATED isUpdated;
 
     // create two EasyTransfer objects.
@@ -83,15 +84,15 @@ public:
     RECEIVE_DATA_STRUCTURE rxdata;
     SEND_DATA_STRUCTURE txdata;
 
-    Universal_Receiver(int rx, int tx, int digNb_hw, int anaNb_hw, int digPins[NB_MAX_DATA], int anaPins[NB_MAX_DATA], bool digInputPullup[NB_MAX_DATA], bool digReversedLogic[NB_MAX_DATA], int16_t thresh[NB_MAX_DATA * 2], String btHardware); // Class constructor for a Software Serial port.
+    Universal_Receiver(int rx, int tx, int digNb_hw, int anaNb_hw, int digPins[NB_MAX_DATA], int anaPins[NB_MAX_DATA], bool digInputPullup[NB_MAX_DATA], bool digReversedLogic[NB_MAX_DATA], int16_t thresh[NB_MAX_DATA], String btHardware); // Class constructor for a Software Serial port.
     // Not all pins on the Mega and Mega 2560 support change interrupts, so only the following can be used for RX: 10, 11, 12, 13, 14, 15, 50, 51, 52, 53, A8 (62), A9 (63), A10 (64), A11 (65), A12 (66), A13 (67), A14 (68), A15 (69).
     // Not all pins on the Leonardo and Micro support change interrupts, so only the following can be used for RX: 8, 9, 10, 11, 14 (MISO), 15 (SCK), 16 (MOSI).
     // On Arduino or Genuino 101 RX doesn't work on Pin 13
-    Universal_Receiver(HardwareSerial *stream, int digNb_hw, int anaNb_hw, int digPins[NB_MAX_DATA], int anaPins[NB_MAX_DATA], bool digInputPullup[NB_MAX_DATA], bool digReversedLogic[NB_MAX_DATA], int16_t thresh[NB_MAX_DATA * 2], String btHardware); // Class constructor for a Hardware Serial port.
-    Universal_Receiver(HardwareSerial *stream, int16_t thresh[NB_MAX_DATA * 2], String btHardware);                                                                                                                                                       // Class constructor for a Hardware Serial port.
-    Universal_Receiver(int rx, int tx, int16_t thresh[NB_MAX_DATA * 2], String btHardware);                                                                                                                                                               // Class constructor for a Hardware Serial port.
+    Universal_Receiver(HardwareSerial *stream, int digNb_hw, int anaNb_hw, int digPins[NB_MAX_DATA], int anaPins[NB_MAX_DATA], bool digInputPullup[NB_MAX_DATA], bool digReversedLogic[NB_MAX_DATA], int16_t thresh[NB_MAX_DATA], String btHardware); // Class constructor for a Hardware Serial port.
+    Universal_Receiver(HardwareSerial *stream, String btHardware);                                                                                                                                                                                    // Class constructor for a Hardware Serial port.
+    Universal_Receiver(int rx, int tx, String btHardware);                                                                                                                                                                                            // Class constructor for a Hardware Serial port.
 
-    void start(int digNb_hw, int anaNb_hw, int digPins[NB_MAX_DATA], int anaPins[NB_MAX_DATA], bool digInputPullup[NB_MAX_DATA], bool digReversedLogic[NB_MAX_DATA], int16_t thresh[NB_MAX_DATA * 2], String btHardware); // Initiates the non-serial port variables.
+    void start(int digNb_hw, int anaNb_hw, int digPins[NB_MAX_DATA], int anaPins[NB_MAX_DATA], bool digInputPullup[NB_MAX_DATA], bool digReversedLogic[NB_MAX_DATA], int16_t thresh[NB_MAX_DATA], String btHardware); // Initiates the non-serial port variables.
 
     bool state();                      // Check if bluetooth is connected
     bool receivedDataFromController(); // Check if new data has arrived from the controller via bluetooth.

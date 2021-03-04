@@ -1,16 +1,10 @@
 #include <Universal_Receiver.h>
 
-int16_t thresholds[NB_MAX_DATA * 2];
-
 Universal_Receiver *rec;
 
 void setup()
 {
-    for (int ii = 0; ii < NB_MAX_DATA * 2; ii++)
-    {
-        thresholds[ii] = 4;
-    }
-    rec = new Universal_Receiver(&Serial2, thresholds, BT_HW_HC05);
+    rec = new Universal_Receiver(&Serial2, BT_HW_HC05);
     Serial.println("Start receiver");
 }
 
@@ -23,7 +17,7 @@ void loop()
         {
             if (rec->isUpdated.bluetooth()) // If we received new bluetooth data.
             {
-                Serial.print("\t\tBluetooth Inputs: ");
+                Serial.print("Bluetooth Inputs: ");
                 for (int ii = 0; ii < rec->rxdata.digitalNb; ii++)
                 {
                     Serial.print(ii + 1);
