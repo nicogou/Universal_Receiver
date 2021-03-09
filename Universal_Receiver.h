@@ -5,7 +5,7 @@
 #include <SoftEasyTransfer.h>
 #include <EasyTransfer.h>
 
-#define NB_MAX_DATA 20
+#define NB_MAX_DATA 14
 #define BT_HW_HM10 "HM-10"
 #define BT_HW_HC05 "HC-05"
 
