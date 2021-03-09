@@ -167,6 +167,11 @@ bool Universal_Receiver::receivedDataFromController()
     {
         bool valid_data = true;
         bool same_data = true;
+        if (first_data)
+        {
+            valid_data = false;
+            first_data = false;
+        }
         for (int ii = 0; ii < NB_MAX_DATA; ii++)
         {
             if (int16_t(ii) < rxdata.analogNb)

@@ -76,6 +76,7 @@ public:
     int16_t lastDigital[NB_MAX_DATA * 2];   // Stores the last digital state.
     int16_t threshold[NB_MAX_DATA];         // Holds the threshold for the analog values. If old_data-threshold <= incoming data <= old_data+threshold, then the incoming data is considered the same as the old data.
     UPDATED isUpdated;
+    bool first_data = true;
 
     // create two EasyTransfer objects.
     SoftEasyTransfer ETin, ETout;   // Used in case of a SW serial port.
