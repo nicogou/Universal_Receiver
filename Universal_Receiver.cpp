@@ -1,6 +1,6 @@
 #include "Universal_Receiver.h"
 
-Universal_Receiver::Universal_Receiver(int rx, int tx, int digNb_hw, int anaNb_hw, int digPins[NB_MAX_DATA], int anaPins[NB_MAX_DATA], bool digInputPullup[NB_MAX_DATA], bool digReversedLogic[NB_MAX_DATA], int16_t thresh[NB_MAX_DATA], String btHardware)
+Universal_Receiver::Universal_Receiver(int8_t rx, int8_t tx, int8_t digNb_hw, int8_t anaNb_hw, int8_t digPins[NB_MAX_DATA], int8_t anaPins[NB_MAX_DATA], bool digInputPullup[NB_MAX_DATA], bool digReversedLogic[NB_MAX_DATA], int16_t thresh[NB_MAX_DATA], String btHardware)
 {
     isHwSerial = false;
     receiverSerialRx = rx;
@@ -10,7 +10,7 @@ Universal_Receiver::Universal_Receiver(int rx, int tx, int digNb_hw, int anaNb_h
     start(digNb_hw, anaNb_hw, digPins, anaPins, digInputPullup, digReversedLogic, thresh, btHardware);
 }
 
-Universal_Receiver::Universal_Receiver(HardwareSerial *stream, int digNb_hw, int anaNb_hw, int digPins[NB_MAX_DATA], int anaPins[NB_MAX_DATA], bool digInputPullup[NB_MAX_DATA], bool digReversedLogic[NB_MAX_DATA], int16_t thresh[NB_MAX_DATA], String btHardware)
+Universal_Receiver::Universal_Receiver(HardwareSerial *stream, int8_t digNb_hw, int8_t anaNb_hw, int8_t digPins[NB_MAX_DATA], int8_t anaPins[NB_MAX_DATA], bool digInputPullup[NB_MAX_DATA], bool digReversedLogic[NB_MAX_DATA], int16_t thresh[NB_MAX_DATA], String btHardware)
 {
     isHwSerial = true;
     hwControllerSerial = stream;
@@ -23,9 +23,9 @@ Universal_Receiver::Universal_Receiver(HardwareSerial *stream, String btHardware
     isHwSerial = true;
     hwControllerSerial = stream;
 
-    int digNb_hw = 0;
-    int anaNb_hw = 0;
-    int zeros[NB_MAX_DATA];
+    int8_t digNb_hw = 0;
+    int8_t anaNb_hw = 0;
+    int8_t zeros[NB_MAX_DATA];
     bool falses[NB_MAX_DATA];
     int16_t zeros_t[NB_MAX_DATA];
     for (int ii = 0; ii < NB_MAX_DATA; ii++)
@@ -38,16 +38,16 @@ Universal_Receiver::Universal_Receiver(HardwareSerial *stream, String btHardware
     start(digNb_hw, anaNb_hw, zeros, zeros, falses, falses, zeros_t, btHardware);
 }
 
-Universal_Receiver::Universal_Receiver(int rx, int tx, String btHardware)
+Universal_Receiver::Universal_Receiver(int8_t rx, int8_t tx, String btHardware)
 {
     isHwSerial = false;
     receiverSerialRx = rx;
     receiverSerialTx = tx;
     controllerSerial = new SoftwareSerial(receiverSerialRx, receiverSerialTx);
 
-    int digNb_hw = 0;
-    int anaNb_hw = 0;
-    int zeros[NB_MAX_DATA];
+    int8_t digNb_hw = 0;
+    int8_t anaNb_hw = 0;
+    int8_t zeros[NB_MAX_DATA];
     int16_t zeros_t[NB_MAX_DATA];
     bool falses[NB_MAX_DATA];
     for (int ii = 0; ii < NB_MAX_DATA; ii++)
@@ -60,7 +60,7 @@ Universal_Receiver::Universal_Receiver(int rx, int tx, String btHardware)
     start(digNb_hw, anaNb_hw, zeros, zeros, falses, falses, zeros_t, btHardware);
 }
 
-void Universal_Receiver::start(int digNb_hw, int anaNb_hw, int digPins[NB_MAX_DATA], int anaPins[NB_MAX_DATA], bool digInputPullup[NB_MAX_DATA], bool digReversedLogic[NB_MAX_DATA], int16_t thresh[NB_MAX_DATA], String btHardware)
+void Universal_Receiver::start(int8_t digNb_hw, int8_t anaNb_hw, int8_t digPins[NB_MAX_DATA], int8_t anaPins[NB_MAX_DATA], bool digInputPullup[NB_MAX_DATA], bool digReversedLogic[NB_MAX_DATA], int16_t thresh[NB_MAX_DATA], String btHardware)
 {
     btHardwareConfig = btHardware;
 
@@ -93,7 +93,7 @@ void Universal_Receiver::start(int digNb_hw, int anaNb_hw, int digPins[NB_MAX_DA
 
     if (digitalNb_hw > 0)
     {
-        for (int ii = 0; ii < digitalNb_hw; ii++)
+        for (int8_t ii = 0; ii < digitalNb_hw; ii++)
         {
             digitalInputPullup[ii] = digInputPullup[ii];
             digitalReversedLogic[ii] = digReversedLogic[ii];
@@ -112,19 +112,19 @@ void Universal_Receiver::start(int digNb_hw, int anaNb_hw, int digPins[NB_MAX_DA
 
     if (analogNb_hw > 0)
     {
-        for (int ii = 0; ii < anaNb_hw; ii++)
+        for (int8_t ii = 0; ii < anaNb_hw; ii++)
         {
             analogPin[ii] = anaPins[ii];
             pinMode(analogPin[ii], INPUT);
         }
     }
 
-    for (int ii = 0; ii < NB_MAX_DATA * 2; ii++)
+    for (int8_t ii = 0; ii < NB_MAX_DATA * 2; ii++)
     {
         lastAnalog[ii] = 0;
         lastDigital[ii] = -1;
     }
-    for (int ii = 0; ii < NB_MAX_DATA; ii++)
+    for (int8_t ii = 0; ii < NB_MAX_DATA; ii++)
     {
         threshold[ii] = thresh[ii];
     }
@@ -136,7 +136,7 @@ bool Universal_Receiver::state()
 {
     if (btHardwareConfig == BT_HW_HM10)
     {
-        int btPin = 0;
+        int8_t btPin = 0;
         btState = digitalRead(digitalPin[btPin]);
         return btState;
     }
@@ -172,7 +172,7 @@ bool Universal_Receiver::receivedDataFromController()
             valid_data = false;
             first_data = false;
         }
-        for (int ii = 0; ii < NB_MAX_DATA; ii++)
+        for (int8_t ii = 0; ii < NB_MAX_DATA; ii++)
         {
             if (int16_t(ii) < rxdata.analogNb)
             {
@@ -193,7 +193,7 @@ bool Universal_Receiver::receivedDataFromController()
                 same_data = false;
             }
         }
-        for (int ii = 0; ii < NB_MAX_DATA; ii++)
+        for (int8_t ii = 0; ii < NB_MAX_DATA; ii++)
         {
             if (int16_t(ii) < rxdata.digitalNb)
             {
@@ -230,7 +230,7 @@ bool Universal_Receiver::receivedDataFromController()
 bool Universal_Receiver::updateWiredInput()
 {
     bool same_data = true;
-    for (int ii = 0; ii < NB_MAX_DATA; ii++)
+    for (int8_t ii = 0; ii < NB_MAX_DATA; ii++)
     {
         if (ii < analogNb_hw)
         {
@@ -248,7 +248,7 @@ bool Universal_Receiver::updateWiredInput()
         }
     }
 
-    for (int ii = 0; ii < NB_MAX_DATA; ii++)
+    for (int8_t ii = 0; ii < NB_MAX_DATA; ii++)
     {
         if (ii < digitalNb_hw)
         {
@@ -285,7 +285,7 @@ bool Universal_Receiver::receivedData()
     return true;
 }
 
-bool Universal_Receiver::digitalState(int ii)
+bool Universal_Receiver::digitalState(int8_t ii)
 {
     bool tmp;
     if (ii < NB_MAX_DATA && ii >= 0)
@@ -307,7 +307,7 @@ bool Universal_Receiver::digitalState(int ii)
     return false;
 }
 
-bool Universal_Receiver::digitalFalling(int ii)
+bool Universal_Receiver::digitalFalling(int8_t ii)
 {
     bool tmp;
     if (ii < NB_MAX_DATA && ii >= 0)
@@ -325,7 +325,7 @@ bool Universal_Receiver::digitalFalling(int ii)
     return false;
 }
 
-bool Universal_Receiver::digitalRising(int ii)
+bool Universal_Receiver::digitalRising(int8_t ii)
 {
     bool tmp;
     if (ii < NB_MAX_DATA && ii >= 0)
