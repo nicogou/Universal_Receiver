@@ -343,6 +343,90 @@ bool Universal_Receiver::digitalRising(int8_t ii)
     return false;
 }
 
+bool Universal_Receiver::analogThreshold_1D(int8_t ii, int16_t threshold, ComparisonMode mode)
+{
+    bool tmp;
+    if (ii < NB_MAX_DATA && ii >= 0)
+    {
+        tmp = isUpdated.bluetooth();
+    }
+    else if (ii >= NB_MAX_DATA && ii < NB_MAX_DATA * 2)
+    {
+        tmp = isUpdated.hardware();
+    }
+
+    if (tmp)
+    {
+        if (mode == EQUAL)
+        {
+            if (analog[ii] == threshold)
+            {
+                return true;
+            }
+            return false;
+        }
+        else if (mode == INF)
+        {
+            if (analog[ii] < threshold)
+            {
+                return true;
+            }
+            return false;
+        }
+        else if (mode == INF_OR_EQUAL)
+        {
+            if (analog[ii] <= threshold)
+            {
+                return true;
+            }
+            return false;
+        }
+        else if (mode == SUP)
+        {
+            if (analog[ii] > threshold)
+            {
+                return true;
+            }
+            return false;
+        }
+        else if (mode == SUP_OR_EQUAL)
+        {
+            if (analog[ii] >= threshold)
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+    return false;
+}
+
+bool Universal_Receiver::analogThreshold_2D(int8_t ii_1, int8_t ii_2, int16_t zero_1, int16_t zero_2, int16_t threshold)
+{
+    bool tmp_1, tmp_2;
+    if (ii_1 < NB_MAX_DATA && ii_1 >= 0)
+    {
+        tmp_1 = isUpdated.bluetooth();
+    }
+    else if (ii_1 >= NB_MAX_DATA && ii_1 < NB_MAX_DATA * 2)
+    {
+        tmp_1 = isUpdated.hardware();
+    }
+    if (ii_2 < NB_MAX_DATA && ii_2 >= 0)
+    {
+        tmp_2 = isUpdated.bluetooth();
+    }
+    else if (ii_2 >= NB_MAX_DATA && ii_2 < NB_MAX_DATA * 2)
+    {
+        tmp_2 = isUpdated.hardware();
+    }
+    if (tmp_1 && tmp_2 && sqrt((analog[ii_1] - zero_1) * (analog[ii_1] - zero_1) + (analog[ii_2] - zero_2) * (analog[ii_2] - zero_2)) > threshold)
+    {
+        return true;
+    }
+    return false;
+}
+
 bool Universal_Receiver::flushSerialPort()
 {
     if (!isHwSerial)

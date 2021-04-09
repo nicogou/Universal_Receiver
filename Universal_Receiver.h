@@ -25,6 +25,16 @@ struct UPDATED
     }
 };
 
+enum ComparisonMode
+{
+    EQUAL = 0,
+    INF = 1,
+    INF_OR_EQUAL = 2,
+    SUP = 3,
+    SUP_OR_EQUAL = 4,
+};
+typedef enum ComparisonMode ComparisonMode;
+
 struct RECEIVE_DATA_STRUCTURE
 {
     // put your variable definitions here for the data you want to receive
@@ -95,14 +105,16 @@ public:
 
     void start(int8_t digNb_hw, int8_t anaNb_hw, int8_t digPins[NB_MAX_DATA], int8_t anaPins[NB_MAX_DATA], bool digInputPullup[NB_MAX_DATA], bool digReversedLogic[NB_MAX_DATA], int16_t thresh[NB_MAX_DATA], String btHardware); // Initiates the non-serial port variables.
 
-    bool state();                      // Check if bluetooth is connected
-    bool receivedDataFromController(); // Check if new data has arrived from the controller via bluetooth.
-    bool updateWiredInput();           // Check if new data has arrived from the hardware inputs.
-    bool receivedData();               // Checks if new data has arrived. Used should use this function and not the previous two.
-    bool digitalState(int8_t ii);      // Returns the state of the digital input at index ii.
-    bool digitalFalling(int8_t ii);    // True if digital input goes from HIGH to LOW. False if not.
-    bool digitalRising(int8_t ii);     // True if digital input goes from LOW to HIGH. False if not.
-    bool flushSerialPort();            // Flushes Serial Port.
+    bool state();                                                                                         // Check if bluetooth is connected
+    bool receivedDataFromController();                                                                    // Check if new data has arrived from the controller via bluetooth.
+    bool updateWiredInput();                                                                              // Check if new data has arrived from the hardware inputs.
+    bool receivedData();                                                                                  // Checks if new data has arrived. Used should use this function and not the previous two.
+    bool digitalState(int8_t ii);                                                                         // Returns the state of the digital input at index ii.
+    bool digitalFalling(int8_t ii);                                                                       // True if digital input goes from HIGH to LOW. False if not.
+    bool digitalRising(int8_t ii);                                                                        // True if digital input goes from LOW to HIGH. False if not.
+    bool analogThreshold_1D(int8_t ii, int16_t threshold, ComparisonMode mode);                           // True if analog input is higher than threshold. False if not.
+    bool analogThreshold_2D(int8_t ii_1, int8_t ii_2, int16_t zero_1, int16_t zero_2, int16_t threshold); // True if distance from (0,0) to (analog[ii,1], analog[ii_2]) is higher than threshold.
+    bool flushSerialPort();                                                                               // Flushes Serial Port.
 };
 
 #endif
