@@ -1,21 +1,21 @@
 #include "Universal_Receiver.h"
 
-Universal_Receiver::Universal_Receiver(int8_t rx, int8_t tx, int8_t digNb_hw, int8_t anaNb_hw, int8_t digPins[NB_MAX_DATA], int8_t anaPins[NB_MAX_DATA], bool digInputPullup[NB_MAX_DATA], bool digReversedLogic[NB_MAX_DATA], int16_t thresh[NB_MAX_DATA], String btHardware)
+Universal_Receiver::Universal_Receiver(int8_t rx, int8_t tx, int8_t digNb_hw, int8_t anaNb_hw, int8_t digPins[NB_MAX_DATA], int8_t anaPins[NB_MAX_DATA], bool digInputPullup[NB_MAX_DATA], bool digReversedLogic[NB_MAX_DATA], int16_t thresh[NB_MAX_DATA], int16_t mid[NB_MAX_DATA], String btHardware)
 {
     isHwSerial = false;
     receiverSerialRx = rx;
     receiverSerialTx = tx;
     controllerSerial = new SoftwareSerial(receiverSerialRx, receiverSerialTx);
 
-    start(digNb_hw, anaNb_hw, digPins, anaPins, digInputPullup, digReversedLogic, thresh, btHardware);
+    start(digNb_hw, anaNb_hw, digPins, anaPins, digInputPullup, digReversedLogic, thresh, mid, btHardware);
 }
 
-Universal_Receiver::Universal_Receiver(HardwareSerial *stream, int8_t digNb_hw, int8_t anaNb_hw, int8_t digPins[NB_MAX_DATA], int8_t anaPins[NB_MAX_DATA], bool digInputPullup[NB_MAX_DATA], bool digReversedLogic[NB_MAX_DATA], int16_t thresh[NB_MAX_DATA], String btHardware)
+Universal_Receiver::Universal_Receiver(HardwareSerial *stream, int8_t digNb_hw, int8_t anaNb_hw, int8_t digPins[NB_MAX_DATA], int8_t anaPins[NB_MAX_DATA], bool digInputPullup[NB_MAX_DATA], bool digReversedLogic[NB_MAX_DATA], int16_t thresh[NB_MAX_DATA], int16_t mid[NB_MAX_DATA], String btHardware)
 {
     isHwSerial = true;
     hwControllerSerial = stream;
 
-    start(digNb_hw, anaNb_hw, digPins, anaPins, digInputPullup, digReversedLogic, thresh, btHardware);
+    start(digNb_hw, anaNb_hw, digPins, anaPins, digInputPullup, digReversedLogic, thresh, mid, btHardware);
 }
 
 Universal_Receiver::Universal_Receiver(HardwareSerial *stream, String btHardware)
@@ -27,15 +27,15 @@ Universal_Receiver::Universal_Receiver(HardwareSerial *stream, String btHardware
     int8_t anaNb_hw = 0;
     int8_t zeros[NB_MAX_DATA];
     bool falses[NB_MAX_DATA];
-    int16_t zeros_t[NB_MAX_DATA];
+    int16_t zeros_t_m[NB_MAX_DATA];
     for (int ii = 0; ii < NB_MAX_DATA; ii++)
     {
         zeros[ii] = 0;
         falses[ii] = false;
-        zeros_t[ii] = 0;
+        zeros_t_m[ii] = 0;
     }
 
-    start(digNb_hw, anaNb_hw, zeros, zeros, falses, falses, zeros_t, btHardware);
+    start(digNb_hw, anaNb_hw, zeros, zeros, falses, falses, zeros_t_m, zeros_t_m, btHardware);
 }
 
 Universal_Receiver::Universal_Receiver(int8_t rx, int8_t tx, String btHardware)
@@ -48,19 +48,19 @@ Universal_Receiver::Universal_Receiver(int8_t rx, int8_t tx, String btHardware)
     int8_t digNb_hw = 0;
     int8_t anaNb_hw = 0;
     int8_t zeros[NB_MAX_DATA];
-    int16_t zeros_t[NB_MAX_DATA];
+    int16_t zeros_t_m[NB_MAX_DATA];
     bool falses[NB_MAX_DATA];
     for (int ii = 0; ii < NB_MAX_DATA; ii++)
     {
         zeros[ii] = 0;
         falses[ii] = false;
-        zeros_t[ii] = 0;
+        zeros_t_m[ii] = 0;
     }
 
-    start(digNb_hw, anaNb_hw, zeros, zeros, falses, falses, zeros_t, btHardware);
+    start(digNb_hw, anaNb_hw, zeros, zeros, falses, falses, zeros_t_m, zeros_t_m, btHardware);
 }
 
-void Universal_Receiver::start(int8_t digNb_hw, int8_t anaNb_hw, int8_t digPins[NB_MAX_DATA], int8_t anaPins[NB_MAX_DATA], bool digInputPullup[NB_MAX_DATA], bool digReversedLogic[NB_MAX_DATA], int16_t thresh[NB_MAX_DATA], String btHardware)
+void Universal_Receiver::start(int8_t digNb_hw, int8_t anaNb_hw, int8_t digPins[NB_MAX_DATA], int8_t anaPins[NB_MAX_DATA], bool digInputPullup[NB_MAX_DATA], bool digReversedLogic[NB_MAX_DATA], int16_t thresh[NB_MAX_DATA], int16_t mid[NB_MAX_DATA], String btHardware)
 {
     btHardwareConfig = btHardware;
 
@@ -127,6 +127,7 @@ void Universal_Receiver::start(int8_t digNb_hw, int8_t anaNb_hw, int8_t digPins[
     for (int8_t ii = 0; ii < NB_MAX_DATA; ii++)
     {
         threshold[ii] = thresh[ii];
+        middle[ii + NB_MAX_DATA] = mid[ii];
     }
 
     flushSerialPort();
@@ -178,11 +179,13 @@ bool Universal_Receiver::receivedDataFromController()
             {
                 lastAnalog[ii] = analog[ii];
                 analog[ii] = rxdata.analog[ii];
+                middle[ii] = rxdata.analogMiddle[ii];
             }
             else
             {
                 lastAnalog[ii] = 0;
                 analog[ii] = 0;
+                middle[ii] = 0;
             }
             if (analog[ii] < 0 || analog[ii] > 1023 || lastAnalog[ii] < 0 || lastAnalog[ii] > 1023)
             {
@@ -337,6 +340,90 @@ bool Universal_Receiver::digitalRising(int8_t ii)
         tmp = isUpdated.hardware();
     }
     if (tmp && digital[ii] == 1 && lastDigital[ii] == 0)
+    {
+        return true;
+    }
+    return false;
+}
+
+bool Universal_Receiver::analogThreshold_1D(int8_t ii, int16_t threshold, ComparisonMode mode)
+{
+    bool tmp;
+    if (ii < NB_MAX_DATA && ii >= 0)
+    {
+        tmp = isUpdated.bluetooth();
+    }
+    else if (ii >= NB_MAX_DATA && ii < NB_MAX_DATA * 2)
+    {
+        tmp = isUpdated.hardware();
+    }
+
+    if (tmp)
+    {
+        if (mode == EQUAL)
+        {
+            if (analog[ii] == threshold)
+            {
+                return true;
+            }
+            return false;
+        }
+        else if (mode == INF)
+        {
+            if (analog[ii] < threshold)
+            {
+                return true;
+            }
+            return false;
+        }
+        else if (mode == INF_OR_EQUAL)
+        {
+            if (analog[ii] <= threshold)
+            {
+                return true;
+            }
+            return false;
+        }
+        else if (mode == SUP)
+        {
+            if (analog[ii] > threshold)
+            {
+                return true;
+            }
+            return false;
+        }
+        else if (mode == SUP_OR_EQUAL)
+        {
+            if (analog[ii] >= threshold)
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+    return false;
+}
+
+bool Universal_Receiver::analogThreshold_2D(int8_t ii_1, int8_t ii_2, int16_t threshold)
+{
+    bool tmp_1, tmp_2;
+    if (ii_1 < NB_MAX_DATA && ii_1 >= 0)
+    {
+        tmp_1 = isUpdated.bluetooth();
+    }
+    else if (ii_1 >= NB_MAX_DATA && ii_1 < NB_MAX_DATA * 2)
+    {
+        tmp_1 = isUpdated.hardware();
+    }
+    if (ii_2 < NB_MAX_DATA && ii_2 >= 0)
+    {
+        tmp_2 = isUpdated.bluetooth();
+    }
+    else if (ii_2 >= NB_MAX_DATA && ii_2 < NB_MAX_DATA * 2)
+    {
+        tmp_2 = isUpdated.hardware();
+    }
+    if (tmp_1 && tmp_2 && sqrt((analog[ii_1] - middle[ii_1]) * (analog[ii_1] - middle[ii_1]) + (analog[ii_2] - middle[ii_2]) * (analog[ii_2] - middle[ii_2])) > threshold)
     {
         return true;
     }

@@ -25,6 +25,16 @@ struct UPDATED
     }
 };
 
+enum ComparisonMode
+{
+    EQUAL = 0,
+    INF = 1,
+    INF_OR_EQUAL = 2,
+    SUP = 3,
+    SUP_OR_EQUAL = 4,
+};
+typedef enum ComparisonMode ComparisonMode;
+
 struct RECEIVE_DATA_STRUCTURE
 {
     // put your variable definitions here for the data you want to receive
@@ -34,6 +44,7 @@ struct RECEIVE_DATA_STRUCTURE
     int16_t analog[NB_MAX_DATA];
     int16_t digital[NB_MAX_DATA];
     int16_t analogThreshold[NB_MAX_DATA];
+    int16_t analogMiddle[NB_MAX_DATA];
 };
 
 struct SEND_DATA_STRUCTURE
@@ -75,6 +86,7 @@ public:
     int16_t lastAnalog[NB_MAX_DATA * 2];    // Stores the last analog state.
     int16_t lastDigital[NB_MAX_DATA * 2];   // Stores the last digital state.
     int16_t threshold[NB_MAX_DATA];         // Holds the threshold for the analog values. If old_data-threshold <= incoming data <= old_data+threshold, then the incoming data is considered the same as the old data.
+    int16_t middle[NB_MAX_DATA * 2];        // Holds the resting value of the analog inputs.
     UPDATED isUpdated;
     bool first_data = true;
 
@@ -85,24 +97,26 @@ public:
     RECEIVE_DATA_STRUCTURE rxdata;
     SEND_DATA_STRUCTURE txdata;
 
-    Universal_Receiver(int8_t rx, int8_t tx, int8_t digNb_hw, int8_t anaNb_hw, int8_t digPins[NB_MAX_DATA], int8_t anaPins[NB_MAX_DATA], bool digInputPullup[NB_MAX_DATA], bool digReversedLogic[NB_MAX_DATA], int16_t thresh[NB_MAX_DATA], String btHardware); // Class constructor for a Software Serial port.
+    Universal_Receiver(int8_t rx, int8_t tx, int8_t digNb_hw, int8_t anaNb_hw, int8_t digPins[NB_MAX_DATA], int8_t anaPins[NB_MAX_DATA], bool digInputPullup[NB_MAX_DATA], bool digReversedLogic[NB_MAX_DATA], int16_t thresh[NB_MAX_DATA], int16_t mid[NB_MAX_DATA], String btHardware); // Class constructor for a Software Serial port.
     // Not all pins on the Mega and Mega 2560 support change interrupts, so only the following can be used for RX: 10, 11, 12, 13, 14, 15, 50, 51, 52, 53, A8 (62), A9 (63), A10 (64), A11 (65), A12 (66), A13 (67), A14 (68), A15 (69).
     // Not all pins on the Leonardo and Micro support change interrupts, so only the following can be used for RX: 8, 9, 10, 11, 14 (MISO), 15 (SCK), 16 (MOSI).
     // On Arduino or Genuino 101 RX doesn't work on Pin 13
-    Universal_Receiver(HardwareSerial *stream, int8_t digNb_hw, int8_t anaNb_hw, int8_t digPins[NB_MAX_DATA], int8_t anaPins[NB_MAX_DATA], bool digInputPullup[NB_MAX_DATA], bool digReversedLogic[NB_MAX_DATA], int16_t thresh[NB_MAX_DATA], String btHardware); // Class constructor for a Hardware Serial port.
-    Universal_Receiver(HardwareSerial *stream, String btHardware);                                                                                                                                                                                                // Class constructor for a Hardware Serial port.
-    Universal_Receiver(int8_t rx, int8_t tx, String btHardware);                                                                                                                                                                                                  // Class constructor for a Hardware Serial port.
+    Universal_Receiver(HardwareSerial *stream, int8_t digNb_hw, int8_t anaNb_hw, int8_t digPins[NB_MAX_DATA], int8_t anaPins[NB_MAX_DATA], bool digInputPullup[NB_MAX_DATA], bool digReversedLogic[NB_MAX_DATA], int16_t thresh[NB_MAX_DATA], int16_t mid[NB_MAX_DATA], String btHardware); // Class constructor for a Hardware Serial port.
+    Universal_Receiver(HardwareSerial *stream, String btHardware);                                                                                                                                                                                                                          // Class constructor for a Hardware Serial port.
+    Universal_Receiver(int8_t rx, int8_t tx, String btHardware);                                                                                                                                                                                                                            // Class constructor for a Hardware Serial port.
 
-    void start(int8_t digNb_hw, int8_t anaNb_hw, int8_t digPins[NB_MAX_DATA], int8_t anaPins[NB_MAX_DATA], bool digInputPullup[NB_MAX_DATA], bool digReversedLogic[NB_MAX_DATA], int16_t thresh[NB_MAX_DATA], String btHardware); // Initiates the non-serial port variables.
+    void start(int8_t digNb_hw, int8_t anaNb_hw, int8_t digPins[NB_MAX_DATA], int8_t anaPins[NB_MAX_DATA], bool digInputPullup[NB_MAX_DATA], bool digReversedLogic[NB_MAX_DATA], int16_t thresh[NB_MAX_DATA], int16_t mid[NB_MAX_DATA], String btHardware); // Initiates the non-serial port variables.
 
-    bool state();                      // Check if bluetooth is connected
-    bool receivedDataFromController(); // Check if new data has arrived from the controller via bluetooth.
-    bool updateWiredInput();           // Check if new data has arrived from the hardware inputs.
-    bool receivedData();               // Checks if new data has arrived. Used should use this function and not the previous two.
-    bool digitalState(int8_t ii);      // Returns the state of the digital input at index ii.
-    bool digitalFalling(int8_t ii);    // True if digital input goes from HIGH to LOW. False if not.
-    bool digitalRising(int8_t ii);     // True if digital input goes from LOW to HIGH. False if not.
-    bool flushSerialPort();            // Flushes Serial Port.
+    bool state();                                                               // Check if bluetooth is connected
+    bool receivedDataFromController();                                          // Check if new data has arrived from the controller via bluetooth.
+    bool updateWiredInput();                                                    // Check if new data has arrived from the hardware inputs.
+    bool receivedData();                                                        // Checks if new data has arrived. Used should use this function and not the previous two.
+    bool digitalState(int8_t ii);                                               // Returns the state of the digital input at index ii.
+    bool digitalFalling(int8_t ii);                                             // True if digital input goes from HIGH to LOW. False if not.
+    bool digitalRising(int8_t ii);                                              // True if digital input goes from LOW to HIGH. False if not.
+    bool analogThreshold_1D(int8_t ii, int16_t threshold, ComparisonMode mode); // True if analog input is higher than threshold. False if not.
+    bool analogThreshold_2D(int8_t ii_1, int8_t ii_2, int16_t threshold);       // True if distance from (0,0) to (analog[ii,1], analog[ii_2]) is higher than threshold.
+    bool flushSerialPort();                                                     // Flushes Serial Port.
 };
 
 #endif
