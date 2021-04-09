@@ -346,6 +346,50 @@ bool Universal_Receiver::digitalRising(int8_t ii)
     return false;
 }
 
+bool Universal_Receiver::compare(int16_t val_1, ComparisonMode mode, int16_t val_2)
+{
+    if (mode == EQUAL)
+    {
+        if (val_1 == val_2)
+        {
+            return true;
+        }
+        return false;
+    }
+    else if (mode == INF)
+    {
+        if (val_1 < val_2)
+        {
+            return true;
+        }
+        return false;
+    }
+    else if (mode == INF_OR_EQUAL)
+    {
+        if (val_1 <= val_2)
+        {
+            return true;
+        }
+        return false;
+    }
+    else if (mode == SUP)
+    {
+        if (val_1 > val_2)
+        {
+            return true;
+        }
+        return false;
+    }
+    else if (mode == SUP_OR_EQUAL)
+    {
+        if (val_1 >= val_2)
+        {
+            return true;
+        }
+        return false;
+    }
+}
+
 bool Universal_Receiver::analogThreshold_1D(int8_t ii, int16_t threshold, ComparisonMode mode)
 {
     bool tmp;
@@ -358,53 +402,14 @@ bool Universal_Receiver::analogThreshold_1D(int8_t ii, int16_t threshold, Compar
         tmp = isUpdated.hardware();
     }
 
-    if (tmp)
+    if (tmp && compare(analog[ii], mode, threshold))
     {
-        if (mode == EQUAL)
-        {
-            if (analog[ii] == threshold)
-            {
-                return true;
-            }
-            return false;
-        }
-        else if (mode == INF)
-        {
-            if (analog[ii] < threshold)
-            {
-                return true;
-            }
-            return false;
-        }
-        else if (mode == INF_OR_EQUAL)
-        {
-            if (analog[ii] <= threshold)
-            {
-                return true;
-            }
-            return false;
-        }
-        else if (mode == SUP)
-        {
-            if (analog[ii] > threshold)
-            {
-                return true;
-            }
-            return false;
-        }
-        else if (mode == SUP_OR_EQUAL)
-        {
-            if (analog[ii] >= threshold)
-            {
-                return true;
-            }
-            return false;
-        }
+        return true;
     }
     return false;
 }
 
-bool Universal_Receiver::analogThreshold_2D(int8_t ii_1, int8_t ii_2, int16_t threshold)
+bool Universal_Receiver::analogThreshold_2D(int8_t ii_1, int8_t ii_2, int16_t threshold, ComparisonMode mode)
 {
     bool tmp_1, tmp_2;
     if (ii_1 < NB_MAX_DATA && ii_1 >= 0)
@@ -423,7 +428,7 @@ bool Universal_Receiver::analogThreshold_2D(int8_t ii_1, int8_t ii_2, int16_t th
     {
         tmp_2 = isUpdated.hardware();
     }
-    if (tmp_1 && tmp_2 && sqrt((analog[ii_1] - middle[ii_1]) * (analog[ii_1] - middle[ii_1]) + (analog[ii_2] - middle[ii_2]) * (analog[ii_2] - middle[ii_2])) > threshold)
+    if (tmp_1 && tmp_2 && compare(sqrt((analog[ii_1] - middle[ii_1]) * (analog[ii_1] - middle[ii_1]) + (analog[ii_2] - middle[ii_2]) * (analog[ii_2] - middle[ii_2])), mode, threshold))
     {
         return true;
     }
