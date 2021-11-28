@@ -290,7 +290,7 @@ bool Universal_Receiver::receivedData()
 
 bool Universal_Receiver::digitalState(int8_t ii)
 {
-    bool tmp;
+    bool tmp = false;
     if (ii < NB_MAX_DATA && ii >= 0)
     {
         tmp = isUpdated.bluetooth();
@@ -312,7 +312,7 @@ bool Universal_Receiver::digitalState(int8_t ii)
 
 bool Universal_Receiver::digitalFalling(int8_t ii)
 {
-    bool tmp;
+    bool tmp = false;
     if (ii < NB_MAX_DATA && ii >= 0)
     {
         tmp = isUpdated.bluetooth();
@@ -330,7 +330,7 @@ bool Universal_Receiver::digitalFalling(int8_t ii)
 
 bool Universal_Receiver::digitalRising(int8_t ii)
 {
-    bool tmp;
+    bool tmp = false;
     if (ii < NB_MAX_DATA && ii >= 0)
     {
         tmp = isUpdated.bluetooth();
@@ -388,11 +388,15 @@ bool Universal_Receiver::compare(int16_t val_1, ComparisonMode mode, int16_t val
         }
         return false;
     }
+    else
+    {
+        return false;
+    }
 }
 
 bool Universal_Receiver::analogThreshold_1D(int8_t ii, int16_t threshold, ComparisonMode mode)
 {
-    bool tmp;
+    bool tmp = false;
     if (ii < NB_MAX_DATA && ii >= 0)
     {
         tmp = isUpdated.bluetooth();
@@ -411,7 +415,7 @@ bool Universal_Receiver::analogThreshold_1D(int8_t ii, int16_t threshold, Compar
 
 bool Universal_Receiver::analogThreshold_2D(int8_t ii_1, int8_t ii_2, int16_t threshold, ComparisonMode mode)
 {
-    bool tmp_1, tmp_2;
+    bool tmp_1 = false, tmp_2 = false;
     if (ii_1 < NB_MAX_DATA && ii_1 >= 0)
     {
         tmp_1 = isUpdated.bluetooth();
